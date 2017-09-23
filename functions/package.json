@@ -5,8 +5,8 @@
     "async": "^2.5.0",
     "coffee-script": "^1.12.7",
     "cors": "^2.8.4",
-    "firebase-admin": "~4.2.1",
-    "firebase-functions": "^0.5.7",
+    "firebase-admin": "^5.2.1",
+    "firebase-functions": "^0.6.3",
     "redwrap": "0.0.4"
   },
   "private": true

@@ -17,9 +17,9 @@ exports.helloWorld2 = functions.https.onRequest (request, response) ->
 exports.helloWorld = functions.https.onRequest (request, response) ->
   total = 0
   async.eachSeries [0..30], ((item, loop_done) ->
-    admin.database().ref("config/after").once 'value', (snap) ->
-      after = snap.val()
-      reddit.list('new').limit(100).after after, (err, data, res) ->
+    admin.database().ref("config/before").once 'value', (snap) ->
+      {count, before} = snap.val()
+      reddit.list('new').count(count).limit(100).before before, (err, data, res) ->
         last_item = 0
         children = data?.data?.children or []
         total += children.length
@@ -29,9 +29,12 @@ exports.helloWorld = functions.https.onRequest (request, response) ->
             link: obj.data.permalink
           }, next
         ), ->
-          if not children.length or not data.data.after
-            return response.send("processed: #{total}")
-          admin.database().ref("config/after").set data.data.after, ->
+          admin.database().ref("config/before").set {
+            before: before or data.data.before
+            count: children.length
+          }, ->
+            if not data.data.before or not children.length
+              return response.send("processed: #{total}")
             loop_done()
   ), ->
     response.send("processed: #{total}")
