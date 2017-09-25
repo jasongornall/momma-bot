@@ -74,23 +74,20 @@ exports.newPosts = functions.https.onRequest (request, response) ->
     ), ->
       console.log 'processing finished'
       admin.database().ref("/users").once 'value', (snap) ->
-
-        console.log 'wtf?'
         users = snap.val()
 
         console.log 'checking for spam'
         async.forEachOfSeries users, ((user_data, user_key, callback) ->
           start_of_day = new Date()
-          start_of_day = start_of_day.setHours(0,0,0)
+          start_of_day = start_of_day.setHours 0, 0, 0
 
           end_of_day = new Date()
-          end_of_day = end_of_day.setHours(23,59,59)
+          end_of_day = end_of_day.setHours 23, 59, 59
 
           spam_keys = []
           purge_keys = []
           for key, value of user_data
             current_post = parseInt(value.utc) * 1000
-            console.log current_post, start_of_day, end_of_day, 'wakka', value
             if current_post >= start_of_day and current_post <= end_of_day
               spam_keys.push {
                 path: "/users/#{user_key}/#{key}"
@@ -126,7 +123,6 @@ exports.newPosts = functions.https.onRequest (request, response) ->
                 'What will your father think?'
                 'Terrible'
                 'No wonder your grades are awful!'
-                'No More Legends of League!'
                 'Wait till your father hears about this!'
               ]
               last_post = {
@@ -147,8 +143,8 @@ exports.newPosts = functions.https.onRequest (request, response) ->
               template += """
                 \n\n
                 ___
-                I Think it's fine time you give the other kids a
-                chance use the Internet! and
+                **I Think it's fine time you give the other kids a
+                chance use the Internet!**
                 **Go^out^side** **you^little^shit**
 
               """
@@ -174,7 +170,8 @@ exports.newPosts = functions.https.onRequest (request, response) ->
             async.each purge_keys, ((key, next) ->
               admin.database().ref(key).remove next
             ), ->
-              callback()
+              process.nextTick ->
+                callback()
         ), ->
           console.log 'done'
           return response.send('ok')
