@@ -3,6 +3,7 @@
   "description": "Cloud Functions for Firebase",
   "dependencies": {
     "async": "^2.5.0",
+    "basic-auth": "^2.0.0",
     "coffee-script": "^1.12.7",
     "cors": "^2.8.4",
     "firebase-admin": "^5.2.1",
