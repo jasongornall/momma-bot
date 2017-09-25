@@ -98,7 +98,6 @@ exports.newPosts = functions.https.onRequest (request, response) ->
               purge_keys.push "/users/#{user_key}/#{key}"
 
           ((next)->
-            console.log spam_keys, 'wwww'
             if spam_keys?.length >= 4
 
               # do reddit post
