@@ -9,7 +9,8 @@
     "firebase-admin": "^5.2.1",
     "firebase-functions": "^0.6.3",
     "raw.js": "^0.6.0",
-    "redwrap": "0.0.4"
+    "redwrap": "0.0.4",
+    "underscore": "^1.8.3"
   },
   "private": true
 }

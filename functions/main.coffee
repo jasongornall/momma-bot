@@ -6,6 +6,7 @@ reddit_rawjs.setupOAuth2 functions.config().reddit.oauth_key, functions.config()
 admin = require('firebase-admin')
 async = require 'async'
 auth = require 'basic-auth'
+_ = require 'underscore'
 admin.initializeApp functions.config().firebase
 cors = require('cors')(origin: true)
 
@@ -39,7 +40,7 @@ exports.newPosts = functions.https.onRequest (request, response) ->
   }, (err, res) ->
     return response.send err if err
     async.whilst ( ->
-      Date.now() - current <= 1000 * 10
+      Date.now() - current <= 1000 * 50
     ), ((loop_done) ->
       admin.database().ref("config/last").once 'value', (snap) ->
         last = snap.val()
@@ -62,6 +63,16 @@ exports.newPosts = functions.https.onRequest (request, response) ->
             return response.send("processed early error")
 
           async.forEachOf new_children, ((obj, key, next) ->
+            if obj.data.author in [
+              'AutoModerator'
+              '-en-'
+              'ImagesOfNetwork'
+              'AutoNewspaperAdmin'
+              'thefeedbot'
+              'autotldr'
+            ]
+              return process.nextTick ->
+                next()
             admin.database().ref("/users/#{obj.data.author}/#{obj.data.name}").set {
               utc: obj.data.created_utc
               link: obj.data.permalink
@@ -101,16 +112,13 @@ exports.newPosts = functions.https.onRequest (request, response) ->
             if spam_keys?.length >= 4
 
               # do reddit post
-              console.log 'doing reddit post', spam_keys
-
               console.log 'forming template'
               template = """
                 EXCUSE ME /u/ #{user_key} THAT'S ENOUGH INTERNET TODAY!
 
-                I SEE YOU POSTING #{spam_keys.length} POSTS IN LESS THAN FRIGGEN 24 HOURS!!!!!\n\n
+                I SEE YOU POSTING #{spam_keys.length} POSTS IN LESS THAN **FRIGGEN 24 HOURS**!!!!!\n\n
               """
-              random_names = [
-                'Here'
+              random_names = _.shuffle [
                 'Another One!'
                 'Really?'
                 'You spent your time posting this?'
@@ -123,13 +131,26 @@ exports.newPosts = functions.https.onRequest (request, response) ->
                 'Terrible'
                 'No wonder your grades are awful!'
                 'Wait till your father hears about this!'
+                'Terrible'
+                'Your Generation is just awful'
+                'Smoke Less Pot please?'
+                'You always were the under achiever'
+                'You really embody the word failure'
+                'This is how you repay my hard work!?'
+                '20 pushups for this one'
+                "Why can't you be normal?"
+                'glued to the screen much?'
+                'Go to your room!'
+                'Wait till your father hears about this'
+                'What did I do to deserve this?'
+                'THIS is how you spend your time?'
               ]
               last_post = {
                 utc: 0
               }
               spam_arr = []
-              for spam_item in spam_keys
-                comment = random_names[Math.floor(Math.random() * random_names.length)]
+              for spam_item, index in spam_keys
+                comment = random_names[index] or ''
                 template += "* [#{spam_item.value.title}](https://reddit.com/#{spam_item.value.link}) *#{comment}*\n\n"
 
                 # get thread to comment on
@@ -142,11 +163,9 @@ exports.newPosts = functions.https.onRequest (request, response) ->
               template += """
                 \n\n
                 ___
-                **I Think it's fine time you give the other kids a
-                chance use the Internet!**
-                **Go^out^side** **you^little^shit**
-
+                **Go^Out^Side** **and** **Do^Anything^Else** **because** **Momma^Says^So**
               """
+              template += "  #{last_post.user}"
               reddit_rawjs.comment 't3_72aki6' or last_post.user, template, (e, data) ->
 
                 finish = -> setTimeout next, 1000 * 3
@@ -165,7 +184,7 @@ exports.newPosts = functions.https.onRequest (request, response) ->
                 return finish()
             else
               next()
-          ) (_) ->
+          ) (_data) ->
             async.each purge_keys, ((key, next) ->
               admin.database().ref(key).remove next
             ), ->
