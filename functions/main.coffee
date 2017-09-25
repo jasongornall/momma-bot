@@ -30,7 +30,7 @@ exports.newPosts = functions.https.onRequest (request, response) ->
   credentials = auth request
   if credentials?.name isnt functions.config().auth.name or credentials?.pass isnt functions.config().auth.pass
     console.log 'hack'
-    # return response.send('hack attempt')
+    return response.send('hack attempt')
 
   current = Date.now()
   reddit_rawjs.auth {
