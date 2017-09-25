@@ -13,18 +13,18 @@ cors = require('cors')(origin: true)
 # // Create and Deploy Your First Cloud Functions
 # // https://firebase.google.com/docs/functions/write-firebase-functions
 #
-exports.helloWorld2 = functions.https.onRequest (request, response) ->
-  cors request, response, =>
-    admin.database().ref("/users").set {}, (err) ->
-      return response.send 'okzz'
+# exports.helloWorld2 = functions.https.onRequest (request, response) ->
+#   cors request, response, =>
+#     admin.database().ref("/users").set {}, (err) ->
+#       return response.send 'okzz'
 
 
-exports.helloWorld3 = functions.https.onRequest (request, response) ->
-  reddit_rawjs.auth {
-    'username': functions.config().reddit.username
-    'password': functions.config().reddit.password
-  }, (err, res) ->
-    response.send err or 'ok'
+# exports.helloWorld3 = functions.https.onRequest (request, response) ->
+#   reddit_rawjs.auth {
+#     'username': functions.config().reddit.username
+#     'password': functions.config().reddit.password
+#   }, (err, res) ->
+#     response.send err or 'ok'
 
 exports.newPosts = functions.https.onRequest (request, response) ->
   credentials = auth request
@@ -106,9 +106,9 @@ exports.newPosts = functions.https.onRequest (request, response) ->
 
               console.log 'forming template'
               template = """
-                EXCUSE ME Mr. /u/ #{user_key} THAT'S ENOUGH INTERNET TODAY!
+                EXCUSE ME /u/ #{user_key} THAT'S ENOUGH INTERNET TODAY!
 
-                I SEE YOU POSTING\n\n
+                I SEE YOU POSTING #{spam_keys.length} POSTS IN LESS THAN FRIGGEN 24 HOURS!!!!!\n\n
               """
               random_names = [
                 'Here'
