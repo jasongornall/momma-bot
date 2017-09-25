@@ -142,6 +142,13 @@ exports.newPosts = functions.https.onRequest (request, response) ->
                 'Wait till your father hears about this'
                 'What did I do to deserve this?'
                 'THIS is how you spend your time?'
+                'Did you forget where the sun was?'
+                'Are you just lonely or something?'
+                'This is why you have no friends'
+                'Pathetic'
+                "I'm calling your father over this"
+                'This was an hour you will never get back'
+                '3 new gray hairs.. thanks'
               ]
               last_post = {
                 utc: 0
@@ -163,7 +170,6 @@ exports.newPosts = functions.https.onRequest (request, response) ->
                 ___
                 **Go^Out^Side** **and** **Do^Anything^Else** **because** **Momma^Says^So**
               """
-              template += "  #{last_post.user}"
               reddit_rawjs.comment 't3_72aki6' or last_post.user, template, (e, data) ->
 
                 finish = -> setTimeout next, 1000 * 3
